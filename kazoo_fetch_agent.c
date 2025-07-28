@@ -766,7 +766,11 @@ switch_status_t fetch_reply(char *uuid_str, char *xml_str, switch_xml_binding_t 
 	while (reply != NULL) {
 		if (!strncmp(reply->uuid_str, uuid_str, SWITCH_UUID_FORMATTED_LENGTH)) {
 			if (!reply->xml_str) {
-				reply->xml_str = xml_str;
+				// our calller will always free xml_str as soon as we return,
+				// so duplicating it there to avoid free() races.
+				// this allocation will be freed by switch_xml_free at the end
+				// of the game or by fetch_handler thread if fails parsing.
+				reply->xml_str = switch_must_strdup(xml_str);
 				switch_thread_cond_broadcast(agent->new_reply);
 				status = SWITCH_STATUS_SUCCESS;
 			}
