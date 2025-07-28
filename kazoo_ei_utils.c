@@ -112,7 +112,8 @@ void ei_encode_switch_event_headers_2(ei_x_buff *ebuf, switch_event_t *event, in
 	for (hp = event->headers; hp; hp = hp->next) {
 		ei_x_encode_tuple_header(ebuf, 2);
 		ei_x_encode_binary(ebuf, hp->name, strlen(hp->name));
-		if (encode) {
+		// do not url decode when we have a contact
+		if (encode && strcmp(hp->name, "contact")) {
 			switch_url_decode(hp->value);
 		}
 		ei_x_encode_binary(ebuf, hp->value, strlen(hp->value));

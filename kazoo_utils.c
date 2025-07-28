@@ -580,7 +580,11 @@ void kz_event_decode(switch_event_t *event)
 	switch_event_header_t *hp;
 	int i;
 	for (hp = event->headers; hp; hp = hp->next) {
-		if (strncmp(hp->name, "_json_", 6)) {
+		if (!strncmp(hp->name, "_json_", 6)) {
+			continue;
+		} else if (!strcmp(hp->name, "contact")) {
+			continue;
+		} else {
 			if (hp->idx) {
 				for(i = 0; i < hp->idx; i++) {
 					switch_url_decode(hp->array[i]);
